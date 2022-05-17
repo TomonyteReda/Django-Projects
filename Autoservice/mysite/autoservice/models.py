@@ -14,7 +14,7 @@ class CarModel(models.Model):
 
 class Car(models.Model):
     country_registration_no = models.CharField('Country registration number', max_length=100, null=False)
-    car_model = models.ForeignKey(CarModel, on_delete=models.SET_NULL, null=True)
+    car_model = models.ForeignKey(CarModel, on_delete=models.RESTRICT, null=False)
     vin_code = models.CharField('VIN', max_length=100)
     client = models.CharField('Country registration number',
                               max_length=100,
@@ -41,7 +41,7 @@ class Service(models.Model):
 
 class Order(models.Model):
     order_date = models.DateField('Order Date', null=False)
-    car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True)
+    car = models.ForeignKey(Car, on_delete=models.RESTRICT, null=False)
     order_amount = models.FloatField('Order Amount', null=False)
 
     class Meta:
@@ -52,8 +52,8 @@ class Order(models.Model):
 
 
 class OrderLine(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey(Service, on_delete=models.RESTRICT, null=False)
+    order = models.ForeignKey(Order, on_delete=models.RESTRICT, null=False)
     quantity = models.IntegerField('Quantity', null=True)
     price = models.FloatField('Price', null=False)
 
