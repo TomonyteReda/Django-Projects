@@ -56,6 +56,20 @@ class Order(models.Model):
     car = models.ForeignKey(Car, on_delete=models.PROTECT, null=False)
     order_amount = models.FloatField('Order Amount', null=False)
 
+    ORDER_STATUS = (
+        ('p', 'processing'),
+        ('c', 'completed'),
+        ('r', 'rejected'),
+    )
+
+    status = models.CharField(
+        max_length=1,
+        choices=ORDER_STATUS,
+        blank=True,
+        default='p',
+        help_text='Order status',
+    )
+
     class Meta:
         ordering = ['order_date']
 
