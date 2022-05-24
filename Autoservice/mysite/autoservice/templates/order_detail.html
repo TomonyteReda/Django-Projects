@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>ORDER ID: {{ order.id }}</h1>
+
+  <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+  <p><strong>Car Model:</strong> {{ order.car.car_model }}</p>
+  <p><strong>Order Amount:</strong> {{ order.order_amount }}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Order details:</h4>
+    {% for order_line in order.orderlines.all %}
+      <hr>
+    <p><strong>Service:</strong> {{ order_line.service }} </p>
+    <p><strong>Quantity:</strong> {{ order_line.quantity }} </p>
+    <p> <strong>Price:</strong> {{ order_line.price }}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <hr class="container car">
+    <h4>{{ car.car_model }}</h4>
+    <hr/>
+    <h1>Car details:</h1>
+    </hr>
+        <p><strong>Owner:</strong> {{ car.client }}</p>
+        <p><strong>Country Code:</strong> {{ car.country_registration_no }}</p>
+        <p><strong>VIN:</strong> {{ car.vin_code }}</p>
+    </div>
+{% endblock %}
