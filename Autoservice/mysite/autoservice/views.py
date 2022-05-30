@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from .models import Car, Service, Order, OrderLine
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 
 def index(request):
@@ -27,7 +30,9 @@ def index(request):
 
 
 def cars(request):
-    cars = Car.objects.all()
+    paginator = Paginator(Car.objects.all(), 1)
+    page_number = request.GET.get('page')
+    cars = paginator.get_page(page_number)
     context = {
         'cars': cars
     }
@@ -43,13 +48,23 @@ def car(request, car_id):
 
 class OrderListView(generic.ListView):
     model = Order
+    paginate_by = 1
     context_object_name = 'order_list'
     template_name = 'order_list.html'
 
     def get_queryset(self):
-        return Order.objects.filter(status='p')
+        orders = Order.objects.filter(status='p')
+        return orders
 
 
 class OrderDetailView(generic.DetailView):
     model = Order
     template_name = 'order_detail.html'
+
+
+def search(request):
+    query = request.GET.get('query')
+    search_results = Car.objects.filter(Q(client__icontains=query) | Q(car_model__car_brand__icontains=query)
+                                        | Q(country_registration_no__icontains=query) | Q(vin_code__icontains=query) \
+                                        | Q(car_model__car_model__icontains=query))
+    return render(request, 'search.html', {'cars': search_results, 'query': query})

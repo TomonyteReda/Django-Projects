@@ -24,6 +24,7 @@ class Car(models.Model):
                               max_length=100,
                               null=False,
                               help_text='Client name and surname')
+    car_photo = models.ImageField('Car Photo', upload_to='car_photos', null=True)
 
     def __str__(self):
         return f'{self.country_registration_no} {self.car_model} {self.vin_code} {self.client}'
@@ -74,7 +75,7 @@ class Order(models.Model):
         ordering = ['order_date']
 
     def __str__(self):
-        return f'{self.id} ({self.order_date}) ({self.car.car_model})'
+        return f'{self.id} ({self.order_date}) ({self.car.car_model}) ({self.car.car_model})'
 
     class Meta:
         verbose_name = 'Order'

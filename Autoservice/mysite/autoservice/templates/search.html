@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Results based on search "{{query}}":</h1>
+  </br>
+  {% if cars %}
+  <ul>
+    {% for car in cars %}
+      <li>
+        <a href="{{ car.id }}">{{car.car_model}}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>Oops. 0 results found :(</p>
+  {% endif %}
+
+  {% endblock %}
