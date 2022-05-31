@@ -16,6 +16,8 @@ def index(request):
 
     # Laisvos knygos (tos, kurios turi statusą 'g')
     completed_orders_count = Order.objects.filter(status__exact='p').count()
+    num_visits = request.session.get('num_visits', 1)
+    request.session['num_visits'] = num_visits + 1
 
 
     # perduodame informaciją į šabloną žodyno pavidale:
@@ -23,6 +25,7 @@ def index(request):
         'service_count': service_count,
         'car_count': car_count,
         'completed_orders_count': completed_orders_count,
+        'num_visits': num_visits,
     }
 
     response = render(request, 'index.html', context=context)
