@@ -10,8 +10,20 @@ class OrderLineInline(admin.TabularInline):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('display_service', 'display_quantity', 'display_price', 'order_date', 'car', 'status')
+    list_display = ('id', 'display_service', 'display_quantity', 'display_price', 'order_date', 'car', 'status', 'due_back',
+                    'user')
+    list_editable = ('status', 'due_back')
+    list_filter = ('status', 'due_back')
     inlines = [OrderLineInline]
+
+    # fieldsets = (
+    #     (None, {
+    #         'fields': ('car', 'id')
+    #     }),
+    #     ('Availability', {
+    #         'fields': ('status', 'due_back', 'user')
+    #     }),
+    # )
 
 
 class CarAdmin(admin.ModelAdmin):

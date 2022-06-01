@@ -10,5 +10,6 @@
         <p><strong>Owner:</strong> {{ car.client }}</p>
         <p><strong>Country Code:</strong> {{ car.country_registration_no }}</p>
         <p><strong>VIN:</strong> {{ car.vin_code }}</p>
+        <p>{{ car.description | safe }}</p>
     </div>
 {% endblock %}

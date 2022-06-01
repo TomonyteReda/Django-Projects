@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse
 import uuid
+from django.contrib.auth.models import User
+from datetime import date
+from tinymce.models import HTMLField
 
 
 class CarModel(models.Model):
@@ -25,9 +28,11 @@ class Car(models.Model):
                               null=False,
                               help_text='Client name and surname')
     car_photo = models.ImageField('Car Photo', upload_to='car_photos', null=True)
+    description = HTMLField(null=True)
+
 
     def __str__(self):
-        return f'{self.country_registration_no} {self.car_model} {self.vin_code} {self.client}'
+        return f'{self.country_registration_no} {self.car_model} {self.vin_code}'
 
     class Meta:
         verbose_name = 'Car'
@@ -52,10 +57,21 @@ class Service(models.Model):
         verbose_name_plural = 'Services'
 
 
+class OrderQuerySet(models.QuerySet):
+    def orders_in_progress(self):
+        return self.filter(status__exact='p')
+
+    def order_by_due_date(self):
+        return self.order_by('due_back')
+
+
 class Order(models.Model):
+    objects = OrderQuerySet.as_manager()
     order_date = models.DateField('Order Date', null=False)
     car = models.ForeignKey(Car, on_delete=models.PROTECT, null=False)
     order_amount = models.FloatField('Order Amount', null=False)
+    due_back = models.DateField('Car will be returned', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     ORDER_STATUS = (
         ('p', 'processing'),
@@ -70,6 +86,12 @@ class Order(models.Model):
         default='p',
         help_text='Order status',
     )
+
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
 
     class Meta:
         ordering = ['order_date']

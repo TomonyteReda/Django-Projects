@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def index(request):
@@ -58,6 +58,15 @@ class OrderListView(generic.ListView):
     def get_queryset(self):
         orders = Order.objects.filter(status='p')
         return orders
+
+
+class OrdersByUserListView(LoginRequiredMixin, generic.ListView):
+    model = Order
+    template_name = 'my_orders.html'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).orders_in_progress().order_by_due_date()
 
 
 class OrderDetailView(generic.DetailView):
