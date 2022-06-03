@@ -25,9 +25,12 @@
               </svg>
             {{ user.get_username }}</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'my_orders'%}">My Orders</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next=/library">Log Out</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next=/autoservice">Log Out</a></li>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Log In</a></li>
+          {% endif %}
+          {% if not user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'register'%}">Register</a></li>
           {% endif %}
           <li><a href="{% url 'index' %}">Start</a></li>
           <li><a href="{% url 'cars' %}">Cars</a></li>

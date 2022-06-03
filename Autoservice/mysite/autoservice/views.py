@@ -6,6 +6,13 @@ from django.views import generic
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.contrib.auth.forms import User
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, reverse
+from .forms import ClientReviewForm
+from django.views.generic.edit import FormMixin
 
 
 def index(request):
@@ -69,9 +76,33 @@ class OrdersByUserListView(LoginRequiredMixin, generic.ListView):
         return Order.objects.filter(user=self.request.user).orders_in_progress().order_by_due_date()
 
 
-class OrderDetailView(generic.DetailView):
+class OrderDetailView(FormMixin, generic.DetailView):
     model = Order
     template_name = 'order_detail.html'
+    form_class = ClientReviewForm
+
+    class Meta:
+        ordering = ['order_date']
+
+    # nurodome, kur atsidursime komentaro sėkmės atveju.
+    def get_success_url(self):
+        return reverse('order_details', kwargs={'pk': self.object.id})
+
+    # standartinis post metodo perrašymas, naudojant FormMixin, galite kopijuoti tiesiai į savo projektą.
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    # štai čia nurodome, kad knyga bus būtent ta, po kuria komentuojame, o vartotojas bus tas, kuris yra prisijungęs.
+    def form_valid(self, form):
+        form.instance.order = self.object
+        form.instance.reviewer = self.request.user
+        form.save()
+        return super(OrderDetailView, self).form_valid(form)
 
 
 def search(request):
@@ -80,3 +111,30 @@ def search(request):
                                         | Q(country_registration_no__icontains=query) | Q(vin_code__icontains=query) \
                                         | Q(car_model__car_model__icontains=query))
     return render(request, 'search.html', {'cars': search_results, 'query': query})
+
+
+@csrf_protect
+def register(request):
+    error_message = None
+    if request.method != "POST":
+        return render(request, 'register.html')
+
+    username = request.POST['username']
+    email = request.POST['email']
+    password = request.POST['password']
+    password2 = request.POST['password2']
+
+    if password != password2:
+        error_message = 'Passwords do not match!'
+    elif User.objects.filter(username=username).exists():
+        error_message = f'User name {username} already exists'
+    elif User.objects.filter(email=email).exists():
+        error_message = f'User email {email} already exists'
+
+    if error_message:
+        messages.error(request, error_message)
+        return redirect('register')
+
+    User.objects.create_user(username=username, email=email, password=password)
+
+    return render(request, 'register.html')

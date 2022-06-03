@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container register">
+        <h3>User Registration</h3><br/>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">User Name</label>
+                <input name="username" type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+                <small id="usernameHelp" class="form-text text-muted">Up to 150 symbols</small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Email</label>
+                <input name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <small id="emailHelp" class="form-text text-muted">Will not be shared with anyone. No spam.
+                    Required for a new password </small>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input name="password" type="password" class="form-control" id="password" aria-describedby="pwdHelp">
+                <small id="pwdHelp" class="form-text text-muted">Not less than 8 symbols. Not only numbers</small>
+            </div>
+            <div class="form-group">
+                <label for="password2">Confirm password</label>
+                <input name="password2" type="password" class="form-control" id="password2" aria-describedby="pwd2Help">
+            </div>
+            <button type="submit" class="btn btn-primary register-button">Register</button>
+        </form>
+        <p>If you have registered earlier, <a href="{% url 'login'%}?next={{request.path}}"><strong>Please log in.</strong></a></p>
+    </div>
+
+{% endblock %}

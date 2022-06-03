@@ -4,6 +4,7 @@ import uuid
 from django.contrib.auth.models import User
 from datetime import date
 from tinymce.models import HTMLField
+from django.db.models import Sum
 
 
 class CarModel(models.Model):
@@ -93,6 +94,18 @@ class Order(models.Model):
             return True
         return False
 
+    @property
+    def get_total_order_amount(self):
+        orderlines = OrderLine.objects.filter(order_id=self.id)
+        total_amount = 0
+        for line in orderlines:
+            total_amount += line.quantity * line.price
+        print(line.quantity)
+        print(type(total_amount))
+        self.order_amount = total_amount
+        self.save()
+
+
     class Meta:
         ordering = ['order_date']
 
@@ -131,3 +144,10 @@ class OrderLine(models.Model):
     class Meta:
         verbose_name = 'Order Line'
         verbose_name_plural = 'Order Lines'
+
+
+class ClientReview(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
+    reviewer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    content = models.TextField('Review', max_length=2000)
